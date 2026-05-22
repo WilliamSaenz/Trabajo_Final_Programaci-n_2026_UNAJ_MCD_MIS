@@ -19,7 +19,7 @@ def separador(titulo=""):
         print("=" * 65)
 
 
-def pausa():
+def pausa(): #Permite volver al menú anterior para poder seguir usando el programa.
     import time
     print("\n  Volviendo al menú en 3 segundos...")
     time.sleep(3)
@@ -28,6 +28,8 @@ def pausa():
 # ************************************************************
 # OPCIÓN 1: LISTADO COMPLETO
 # ************************************************************
+# Esta función sirve para mostrar el listado completo de estudiantes, utilizando el método "getEstudiantes"
+# desde la clase Curso. 
 
 def opcion_listado(curso):
     separador("LISTADO COMPLETO DE ESTUDIANTES")
@@ -40,11 +42,13 @@ def opcion_listado(curso):
 # ************************************************************
 # OPCIÓN 2: BUSCAR POR LEGAJO
 # ************************************************************
+# Esta función tiene el propósito de permitir al usuario buscar a los estudiantes por número de legajo, 
+# con el objetivo de no tener que buscar por nombre, cuando tal vez estos nombres se repiten en distintos estudiantes.
 
 def opcion_buscar_legajo(curso):
     separador("BUSCAR ESTUDIANTE POR LEGAJO")
     try:
-        legajo = int(input("  Ingrese el número de legajo: "))
+        legajo = int(input("  Ingrese el número de legajo: ")) #Nos seguramos de que se ingrese un número.
     except ValueError:
         print("  Error: Debe ingresar un número entero.")
         pausa()
@@ -53,7 +57,7 @@ def opcion_buscar_legajo(curso):
     est = curso.buscar_por_legajo(legajo)
 
     if est is None:
-        print(f"  No se encontró un estudiante con legajo #{legajo}.")
+        print(f"  No se encontró un estudiante con legajo #{legajo}.") #Mensaje si el número de legajo no es existente.
     else:
         print(f"\n  Estudiante: {est.getNombreCompleto()} (Legajo #{est.getLegajo()})")
         print(f"  {'─' * 50}")
@@ -79,12 +83,14 @@ def opcion_buscar_legajo(curso):
 # ************************************************************
 # OPCIÓN 3: PROMEDIO INDIVIDUAL
 # ************************************************************
+# Esta función permite hacer una revisión del promedio con y sin aplazos y situación académica de cada estudiante. Llama 
+# el método "getEstudiantes" de la clase Curso, que a su vez utiliza getters y métodos de la clase Estudiante.
 
 def opcion_promedio_individual(curso):
     separador("PROMEDIO INDIVIDUAL POR ESTUDIANTE")
 
-    print(f"  {'Legajo':<8} {'Nombre':<25} {'Prom.':<8} {'Sin apl.':<10} {'Situación'}")
-    print(f"  {'-'*8} {'-'*25} {'-'*8} {'-'*10} {'-'*12}")
+    print(f"  {'Legajo':<8} {'Nombre':<25} {'Prom.':<8} {'Sin apl.':<10} {'Situación'}") #Se configura para que las columnas
+    print(f"  {'-'*8} {'-'*25} {'-'*8} {'-'*10} {'-'*12}")                               #estén alineadas
 
     for est in curso.getEstudiantes():
         print(f"  {est.getLegajo():<8} {est.getNombreCompleto():<25} "
@@ -98,6 +104,8 @@ def opcion_promedio_individual(curso):
 # ************************************************************
 # OPCIÓN 4: ESTADÍSTICAS GENERALES
 # ************************************************************
+# Permite la visualización de métricas generales del curso, es decir, la lista de alumnos cargada al archivo. Para esto
+# llama métodos de la clase Curso e imporme por pantalla cada métrica por separado.
 
 def opcion_promedio_general(curso):
     separador("ESTADÍSTICAS GENERALES DEL CURSO")
