@@ -1,6 +1,7 @@
 # presentacion.py
 # MÓDULO 3: PRESENTACIÓN DE RESULTADOS
-# Menú interactivo con reportes por consola y gráficos con matplotlib.
+# Este programa permite, desde un menú interactivo, acceder a los distinos reportes por consola y gráficos diseñados
+# a través de la librería Matplotlib.
 
 import matplotlib.pyplot as plt
 from modelos import Estudiante, Curso
@@ -59,11 +60,11 @@ def opcion_buscar_legajo(curso):
     if est is None:
         print(f"  No se encontró un estudiante con legajo #{legajo}.") #Mensaje si el número de legajo no es existente.
     else:
-        print(f"\n  Estudiante: {est.getNombreCompleto()} (Legajo #{est.getLegajo()})")
+        print(f"\n  Estudiante: {est.getNombreCompleto()} (Legajo #{est.getLegajo()})") #Muestra nombre del estudiante
         print(f"  {'─' * 50}")
 
-        for materia, nota in est.getNotas().items():
-            clasif = est.clasificar_nota(nota)
+        for materia, nota in est.getNotas().items(): #Como "notas" es un diccionario, permite iterar los pares clave-valor
+            clasif = est.clasificar_nota(nota) #Llama al clasificador de notas de la clase Estudiante
             print(f"    {materia:<30s} : {nota:>5.1f}  {clasif}")
 
         print(f"  {'─' * 50}")
@@ -74,7 +75,7 @@ def opcion_buscar_legajo(curso):
         print(f"    Aplazos                 : {est.contar_aplazos()}")
         print(f"    Situación académica     : {est.obtener_situacion()}")
 
-        if len(est.materias_reprobadas()) > 0:
+        if len(est.materias_reprobadas()) > 0: #En caso de tener materias reprobadas, muestra cuál debe recuperar.
             print(f"    Materias a recuperar    : {', '.join(est.materias_reprobadas())}")
 
     pausa()
@@ -105,7 +106,7 @@ def opcion_promedio_individual(curso):
 # OPCIÓN 4: ESTADÍSTICAS GENERALES
 # ************************************************************
 # Permite la visualización de métricas generales del curso, es decir, la lista de alumnos cargada al archivo. Para esto
-# llama métodos de la clase Curso e imporme por pantalla cada métrica por separado.
+# llama métodos de la clase Curso e imprime por pantalla cada métrica por separado.
 
 def opcion_promedio_general(curso):
     separador("ESTADÍSTICAS GENERALES DEL CURSO")
@@ -118,11 +119,12 @@ def opcion_promedio_general(curso):
     mejor_asig, prom_mejor = curso.asignatura_mayor_rendimiento()
     peor_asig, prom_peor = curso.asignatura_menor_rendimiento()
 
-    suma_promedios = 0
+    suma_promedios = 0 #Calcula el promedio general del curso
     for est in curso.getEstudiantes():
         suma_promedios += est.calcular_promedio()
     prom_general = suma_promedios / total
 
+    # Impresión por pantalla de cada métrica
     print(f"    Total de estudiantes    : {total}")
     print(f"    Aprobados               : {aprobados} ({curso.porcentaje_aprobacion()}%)")
     print(f"    Reprobados              : {reprobados} ({100 - curso.porcentaje_aprobacion()}%)")
@@ -137,6 +139,8 @@ def opcion_promedio_general(curso):
 # ************************************************************
 # OPCIÓN 5: PROMEDIO POR ASIGNATURA
 # ************************************************************
+# En esta función también se parte de métodos creados en la clase Curso para obtener datos adicionales como promedio por
+# cada una de las seis asignaturas y el porcentaje de aprobación en cada una de ellas. 
 
 def opcion_promedio_asignatura(curso):
     separador("PROMEDIO POR ASIGNATURA")
@@ -156,6 +160,10 @@ def opcion_promedio_asignatura(curso):
 # ************************************************************
 # OPCIÓN 6: DETALLE POR MATERIA
 # ************************************************************
+# Dentro de esta opción se puede averiguar, mediante esta función, la lista de alumnos con las calificaciones (ordenada
+# desde la nota más alta a la baja) y el estado académico, y también algunos datos de estadística descriptiva, de cada 
+# una de las materias. Por consola se puede elegir qué materia que desea averiguar. También se parte de métodos descriptos 
+# en la clase Curso para crear la función.
 
 def opcion_detalle_materia(curso):
     separador("DETALLE POR MATERIA")
@@ -167,18 +175,18 @@ def opcion_detalle_materia(curso):
     try:
         opcion = int(input("\n  Seleccione una materia (1-6): "))
         if opcion < 1 or opcion > 6:
-            print("  Error: Opción fuera de rango.")
+            print("  Error: Opción fuera de rango.") #Se realiza una validación para ingresar numeros enteros del 1 al 6.
             pausa()
             return
     except ValueError:
-        print("  Error: Debe ingresar un número.")
+        print("  Error: Debe ingresar un número.") #Se hace otra validación para que sea solo números el input.
         pausa()
         return
 
     materia = Estudiante.ASIGNATURAS[opcion - 1]
     separador(f"DETALLE: {materia.upper()}")
 
-    # Ordenar por nota (burbuja)
+    # Ordenar por nota mediante ordenamiento por burbuja
     lista = list(curso.getEstudiantes())
     for i in range(len(lista)):
         for j in range(i + 1, len(lista)):
@@ -188,8 +196,9 @@ def opcion_detalle_materia(curso):
     print(f"  {'Pos':<5} {'Legajo':<8} {'Nombre':<25} {'Nota':<8} {'Estado'}")
     print(f"  {'-'*5} {'-'*8} {'-'*25} {'-'*8} {'-'*15}")
 
+    # Estadísticas de la materia
     pos = 1
-    for est in lista:
+    for est in lista: 
         nota = est.getNotas()[materia]
         clasif = est.clasificar_nota(nota)
         print(f"  {pos:<5} {est.getLegajo():<8} {est.getNombreCompleto():<25} "
@@ -213,10 +222,12 @@ def opcion_detalle_materia(curso):
 
     pausa()
 
-
+#FUNCIONES PARA CREACIÓN DE GRÁFICO, UTILIZANDO LA LIBRERÍA MATPLOTLIB
 # ************************************************************
 # OPCIÓN 7: GRÁFICO DE BARRAS — PROMEDIO POR ASIGNATURA
 # ************************************************************
+# Esta función se utiliza para crear un gráfico de barras donde se visualiza el promedio general por asignatura, poniendo
+# un punto de corte visual en la nota de aprobación (6). 
 
 def opcion_grafico_promedios(curso):
     separador("GENERANDO GRÁFICO: Promedio por Asignatura")
@@ -276,6 +287,8 @@ def opcion_grafico_promedios(curso):
 # ************************************************************
 # OPCIÓN 8: GRÁFICO — % APROBACIÓN POR ASIGNATURA
 # ************************************************************
+# Esta función se utiliza para crear un gráfico de barras donde se muestre el porcentaje de aprobación general 
+# en cada materia. 
 
 def opcion_grafico_aprobacion(curso):
     separador("GENERANDO GRÁFICO: % Aprobación por Asignatura")
@@ -335,6 +348,8 @@ def opcion_grafico_aprobacion(curso):
 # ************************************************************
 # OPCIÓN 9: GRÁFICO TORTA — SITUACIÓN ACADÉMICA
 # ************************************************************
+# Esta función tiene el objetivo de crear un gráfico de torta donde se pueda ver el porcentaje de alumnos aprobados
+# y desaprobados.
 
 def opcion_grafico_situacion(curso):
     separador("GENERANDO GRÁFICO: Distribución Académica")
@@ -365,6 +380,9 @@ def opcion_grafico_situacion(curso):
 # ************************************************************
 # MENÚ PRINCIPAL
 # ************************************************************
+#Estas últimas funciones permiten crear el menú interactivo donde, con "mostrar_menu", se visualizan por consola todas
+# las opciones que se pueden elegir y, con "ejecutar_menu", se crea un bucle donde cada condición es cada función creada
+# anteriormente en este bloque. 
 
 def mostrar_menu():
     print("\n" + "*" * 60)
@@ -387,13 +405,12 @@ def mostrar_menu():
     print("    0. Salir")
     print("*" * 60)
 
-
+ #Bucle principal del menú interactivo
 def ejecutar_menu():
-    """Bucle principal del menú interactivo."""
-
+   
     curso = Curso(ARCHIVO)
 
-    if curso.getCantidad() == 0:
+    if curso.getCantidad() == 0: #En caso de que no se hayan ejecutado los módulos anteriores, da aviso para realizarlo. 
         print("\n  Error: No se pudieron cargar estudiantes.")
         print("  Ejecute primero el Módulo 1 (estudiantes_csv.py).")
         return
@@ -430,6 +447,7 @@ def ejecutar_menu():
 # ************************************************************
 # PUNTO DE ENTRADA
 # ************************************************************
+# Para comprobar si el script actual es el programa principal que se está ejecutando.
 
 if __name__ == "__main__":
     ejecutar_menu()
