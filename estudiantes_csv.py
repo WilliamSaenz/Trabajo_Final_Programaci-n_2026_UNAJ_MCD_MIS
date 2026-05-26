@@ -2,16 +2,16 @@
 # MÓDULO 1: LECTURA Y PROCESAMIENTO DE DATOS
 # Gestiona el archivo CSV: precarga, lectura, validación e ingreso de alumnos.
 
-import csv
-import os
+import csv #csv: permite leer y escribir archivos
+import os #os: se usa para verificar si un archivo existe en la computadora.
 
 # ************************************************************
 # REFERENCIAS AUXILIARES
 # ************************************************************
 
-ARCHIVO = "estudiantes.csv"
+ARCHIVO = "estudiantes.csv" #Define el nombre del archivo donde se guardan los estudiantes.
 
-HEADERS = ["Legajo", "Nombre", "Apellido", "Programación", "Análisis Estadístico",
+HEADERS = ["Legajo", "Nombre", "Apellido", "Programación", "Análisis Estadístico",  #Define los encabezados del CSV. Son las columnas del archivo: legajo, nombre, apellido y materias.
            "Base de Datos", "Arquitecturas en la Nube",
            "Aprendizaje Automático", "Captura de la Información"]
 
@@ -22,17 +22,17 @@ HEADERS = ["Legajo", "Nombre", "Apellido", "Programación", "Análisis Estadíst
 #            Si el archivo no existe, primero escribe los encabezados.
 # ************************************************************
 
-def guardar_estudiantes_csv(nombre_archivo, headers, datos):
+def guardar_estudiantes_csv(nombre_archivo, headers, datos): #Esta función guarda alumnos en el archivo CSV.
 
-    archivo_existe = os.path.isfile(nombre_archivo)
+    archivo_existe = os.path.isfile(nombre_archivo) #Verifica si el archivo ya existe
 
-    with open(nombre_archivo, 'a', newline="", encoding="utf-8") as archivo:
+    with open(nombre_archivo, 'a', newline="", encoding="utf-8") as archivo: #Abre el archivo en modo append, o sea, agrega datos al final sin borrar lo anterior.
         agregar_est = csv.writer(archivo)
 
-        if not archivo_existe:
-            agregar_est.writerow(headers)
+        if not archivo_existe:     #Si el archivo no existe, primero escribe los encabezados.
+            agregar_est.writerow(headers) 
 
-        agregar_est.writerows(datos)
+        agregar_est.writerows(datos) #Guarda una o varias filas de alumnos.
 
 
 # ************************************************************
@@ -41,10 +41,10 @@ def guardar_estudiantes_csv(nombre_archivo, headers, datos):
 #            y todas las filas de datos por separado.
 # ************************************************************
 
-def leer_alumnos_csv(nombre_archivo):
+def leer_alumnos_csv(nombre_archivo): #Esta función lee el archivo CSV y devuelve dos cosas:
 
-    headers = []
-    datos_rows = []
+    headers = []   # headers: encabezados del archivo.
+    datos_rows = []  # datos_rows: filas con alumnos.
 
     try:
         with open(nombre_archivo, 'r', encoding="utf-8") as lectura:
@@ -52,19 +52,19 @@ def leer_alumnos_csv(nombre_archivo):
 
             try:
                 headers = next(reader)
-            except StopIteration:
+            except StopIteration: #Si el archivo está vacío.
                 print("Error: El archivo está vacío.")
                 return headers, datos_rows
 
             datos_rows = list(reader)
 
-    except FileNotFoundError:
+    except FileNotFoundError:          #Si el archivo no existe.
         print(f"Error: El archivo '{nombre_archivo}' no fue encontrado.")
 
-    except PermissionError:
+    except PermissionError:           #Si no tiene permiso para leerlo.
         print("Ocurrió un error al leer el archivo.")
 
-    return headers, datos_rows
+    return headers, datos_rows 
 
 
 # ************************************************************
@@ -73,22 +73,22 @@ def leer_alumnos_csv(nombre_archivo):
 #            leyendo el archivo CSV.
 # ************************************************************
 
-def obtener_legajo(nombre_archivo):
-    headers, datos = leer_alumnos_csv(nombre_archivo)
+def obtener_legajo(nombre_archivo):   # Busca cuál es el último legajo usado y devuelve el siguiente.
+    headers, datos = leer_alumnos_csv(nombre_archivo) 
 
     max_legajo = 0
 
     if datos:
         for alumno_data in datos:
             try:
-                legajo_actual = int(alumno_data[0])
+                legajo_actual = int(alumno_data[0]) #Toma el primer dato de cada fila, que corresponde al legajo.
                 if legajo_actual > max_legajo:
                     max_legajo = legajo_actual
             except (ValueError, IndexError):
                 print("Advertencia: legajo inválido o no encontrado.")
                 continue
 
-    return max_legajo + 1
+    return max_legajo + 1 #Si el mayor legajo era 30, devuelve 31.
 
 
 # ************************************************************
@@ -97,21 +97,21 @@ def obtener_legajo(nombre_archivo):
 #            un número decimal, entre 1 y 10.
 # ************************************************************
 
-def pedir_nota(materia):
+def pedir_nota(materia): #Pide una nota y valida que sea numérica y esté entre 1 y 10.
 
     while True:
         entrada = input(f"Ingrese la nota de {materia}: ")
 
         try:
-            nota = float(entrada)
+            nota = float(entrada) #Pide una nota y valida que sea numérica y esté entre 1 y 10.
 
-            if 1 <= nota <= 10:
+            if 1 <= nota <= 10: #Solo acepta notas válidas.
                 return nota
 
             else:
                 print("Error: La nota debe estar entre 1 y 10.")
 
-        except ValueError:
+        except ValueError:  #Captura el error si el usuario escribe texto en vez de número.
             print("Error: Debe ingresar un número válido.")
 
 
@@ -121,15 +121,15 @@ def pedir_nota(materia):
 #            usando pedir_nota() para validar cada nota.
 # ************************************************************
 
-def ingresar_alumno():
+def ingresar_alumno():  # Esta función se encarga de pedir todos los datos de un alumno nuevo.
 
-    legajo = obtener_legajo(ARCHIVO)
+    legajo = obtener_legajo(ARCHIVO) # Después pide nombre y apellido:
 
     print(f"\n  --- Ingreso del alumno (Legajo Nro: {legajo}) ---")
 
-    nombre = input("Ingrese el nombre del alumno: ")
+    nombre = input("Ingrese el nombre del alumno: ") # Valida que sean solo letras:
     while True:
-        if nombre.isalpha():
+        if nombre.isalpha(): #isalpha() no acepta espacios y comprobar si todos los caracteres de una cadena de texto (string) son letras
             break
         else:
             print("Error: El nombre debe contener solo letras.")
@@ -143,6 +143,7 @@ def ingresar_alumno():
             print("Error: El apellido debe contener solo letras.")
             apellido = input("Ingrese el apellido del alumno: ")
 
+# Se piden las notas usando la función pedir_nota():
     programacion = pedir_nota("Programación")
     estadistica = pedir_nota("Análisis Estadístico")
     base_datos = pedir_nota("Base de Datos")
@@ -150,7 +151,7 @@ def ingresar_alumno():
     aprendizaje = pedir_nota("Aprendizaje Automático")
     captura = pedir_nota("Captura de la Información")
 
-    return [str(legajo), nombre, apellido, programacion,
+    return [str(legajo), nombre, apellido, programacion,  # devuelve una lista con todos los datos del alumno
             estadistica, base_datos, nube, aprendizaje,
             captura]
 
@@ -161,9 +162,9 @@ def ingresar_alumno():
 #            de ejemplo para no arrancar siempre desde cero.
 # ************************************************************
 
-def precargar_datos(nombre_archivo, headers):
+def precargar_datos(nombre_archivo, headers):  # Esta función crea el archivo con 30 alumnos de ejemplo si todavía no existe
 
-    if not os.path.isfile(nombre_archivo):
+    if not os.path.isfile(nombre_archivo): # Si el archivo no existe, carga los datos iniciales.
 
         datos_iniciales = [
             ["1",  "Juan",      "Pérez",      8.0, 7.5, 9.0, 6.0, 8.0, 7.0],
@@ -198,7 +199,7 @@ def precargar_datos(nombre_archivo, headers):
             ["30", "Lucía",     "Díaz",        7.0, 8.0, 6.0, 7.0, 8.0, 7.0],
         ]
 
-        guardar_estudiantes_csv(nombre_archivo, headers, datos_iniciales)
+        guardar_estudiantes_csv(nombre_archivo, headers, datos_iniciales) #Usa la función anterior para guardar esos alumnos; esto permite que el sistema no empiece desde cero.
         print(f"Archivo '{nombre_archivo}' creado con {len(datos_iniciales)} alumnos precargados.\n")
 
     else:
@@ -211,9 +212,9 @@ def precargar_datos(nombre_archivo, headers):
 #            permite ingresar alumnos nuevos por teclado.
 # ************************************************************
 
-def ejecutar_modulo1():
+def ejecutar_modulo1():  # Es la función principal del módulo.
 
-    precargar_datos(ARCHIVO, HEADERS)
+    precargar_datos(ARCHIVO, HEADERS) # Primer acción: precarga datos:
 
     print("*" * 50)
     print("  --- Sistema de ingreso de alumnos ---")
@@ -221,8 +222,8 @@ def ejecutar_modulo1():
 
     while True:
 
-        while True:
-            agregar = input("\n¿Desea ingresar un nuevo alumno? (s/n): ").lower()
+        while True: #Segundo acción: permite ingresar alumnos nuevos:
+            agregar = input("\n¿Desea ingresar un nuevo alumno? (s/n): ").lower() #Valida que el usuario escriba solo s o n.
 
             if agregar != 's' and agregar != 'n':
                 print("Error: Debe ingresar 's' o 'n'.")
@@ -231,13 +232,13 @@ def ejecutar_modulo1():
 
         if agregar != 's':
             break
-
+# Si responde "s", llama a:
         alumno = ingresar_alumno()
         guardar_estudiantes_csv(ARCHIVO, HEADERS, [alumno])
         print("Alumno guardado correctamente.\n")
 
     print("\n--- Alumnos registrados ---")
-
+# Al final muestra todos los alumnos registrados:
     headers, datos = leer_alumnos_csv(ARCHIVO)
 
     if headers:
@@ -248,7 +249,6 @@ def ejecutar_modulo1():
 
     print(f"\nTotal de alumnos: {len(datos)}")
 
-
-# Si se ejecuta directamente
+#Bloque final: Si este archivo se ejecuta directamente, correr el programa principal; Pero si este archivo se importa desde otro módulo, no ejecutar automáticamente.
 if __name__ == "__main__":
     ejecutar_modulo1()
